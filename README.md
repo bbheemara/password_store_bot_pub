@@ -13,9 +13,6 @@ after setting up master password then use /start again to store a new password
 Use this to get your stored password(you will be asked to master password here)
 
 
-## /update <service name>
-Use this command to update a existing service password (you will be asked to master password here)
-
 ## /delete <service name>
 Use this command to delete a service if you want to delete a service (you will be asked to master password here)
 
