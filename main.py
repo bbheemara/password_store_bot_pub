@@ -64,8 +64,7 @@ class VerifyMasterPasswordModal(Modal, title="🔑 Enter Master Password"):
                 else:
                     decrypted = decrypt_password(encrypted)
                     await interaction.response.send_message(f"🔑 Your password for `{self.service}` is: `{decrypted}`", ephemeral=True,delete_after=35)
-            elif self.action == "update":
-                await interaction.response.send_modal(UpdatePasswordModal(self.service))
+            
             elif self.action == "delete":
                 if delete_password(interaction.user.id, self.service):
                     await interaction.response.send_message(f"✅ Deleted password for `{self.service}`.", ephemeral=True,delete_after=35)
@@ -108,27 +107,6 @@ class StorePasswordView(View):
 
 
 
-class UpdatePasswordModal(Modal):
-    def __init__(self, service: str):
-        super().__init__(title="🔁 Update Your Password")
-        self.service_name = service
-        self.password_field = TextInput(
-            label="New Password",
-            placeholder="Enter new password",
-            style=discord.TextStyle.short,
-            required=True
-        )
-        self.add_item(self.password_field)
-
-
-
-    async def on_submit(self, interaction: discord.Interaction):
-        encrypted = encrypt_password(self.password_field.value)
-        store_password(interaction.user.id, self.service_name, encrypted)
-        await interaction.response.send_message(
-            f"✅ Password updated for `{self.service_name}`!", ephemeral=True,delete_after=35
-        )
-
 
 
 @bot.tree.command(name="start", description="Initialize and set master password or store new password")
@@ -155,12 +133,6 @@ async def get_slash(interaction: discord.Interaction, service: str):
 
 
 
-@bot.tree.command(name="update", description="Update a password (requires master password)")
-async def update_slash(interaction: discord.Interaction, service: str):
-    if not get_master_pass(interaction.user.id):
-        await interaction.response.send_message("🔐 Please set a master password first using `/start`.", ephemeral=True)
-        return
-    await interaction.response.send_modal(VerifyMasterPasswordModal("update", service))
 
 
 
@@ -217,7 +189,6 @@ async def helpme(ctx):
         "**Slash Commands (Recommended):**\n"
         "`/start` – Set master password or store new password\n"
         "`/get <service>` – Retrieve password (requires master password)\n"
-        "`/update <service>` – Update password (requires master password)\n"
         "`/delete <service>` – Delete password (requires master password)\n"
         "`/export` – Export vault (requires master password)\n\n"
         "**Classic Commands:**\n"
